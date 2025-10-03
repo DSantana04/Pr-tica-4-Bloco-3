@@ -1,0 +1,48 @@
+services:
+  servidor_ubuntu:
+    image: ubuntu:latest
+    container_name: servidor_ubuntu
+    command: tail -f /dev/null
+    networks:
+      - rede_app1
+    depends_on:
+      - db_postgres
+
+  db_postgres:
+    image: postgres:14-alpine
+    container_name: db_postgres
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: minha_app_db
+    networks:
+      - rede_app1
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  servidor_centos:
+    image: quay.io/centos/centos:stream9
+    container_name: servidor_centos
+    command: tail -f /dev/null
+    networks:
+      - rede_app2
+    depends_on:
+      - db_redis
+
+  db_redis:
+    image: redis:latest
+    container_name: db_redis
+    networks:
+      - rede_app2
+    volumes:
+      - redis_data:/data
+
+networks:
+  rede_app1:
+    driver: bridge
+  rede_app2:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
